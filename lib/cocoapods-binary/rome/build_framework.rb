@@ -1,7 +1,7 @@
 require 'fourflusher'
 require 'xcpretty'
 
-CONFIGURATION = "Release"
+CONFIGURATION = "Debug"
 PLATFORMS = { 'iphonesimulator' => 'iOS',
               'appletvsimulator' => 'tvOS',
               'watchsimulator' => 'watchOS' }
