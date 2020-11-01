@@ -21,28 +21,6 @@ def build_for_iosish_platform(sandbox,
                               custom_build_options_simulator = [] # Array<String>
                               )
 
-  # # iOS devices
-  # xcodebuild archive \
-  #   -scheme XCFrameworkExample-iOS \
-  #   -archivePath "./build/ios.xcarchive" \
-  #   -sdk iphoneos \
-  #   SKIP_INSTALL=NO \
-  #   BUILD_LIBRARY_FOR_DISTRIBUTION=YES
-  # # iOS simulator
-  # xcodebuild archive \
-  #   -scheme XCFrameworkExample-iOS \
-  #   -archivePath "./build/ios_sim.xcarchive" \
-  #   -sdk iphonesimulator \
-  #   SKIP_INSTALL=NO \
-  #   BUILD_LIBRARY_FOR_DISTRIBUTION=YES
-
-  #
-  # xcodebuild -create-xcframework \
-  #   -framework "./build/ios.xcarchive/Products/Library/Frameworks/XCFrameworkExample.framework" \
-  #   -framework "./build/ios_sim.xcarchive/Products/Library/Frameworks/XCFrameworkExample.framework" \
-  #   -framework "./build/macos.xcarchive/Products/Library/Frameworks/XCFrameworkExample.framework" \
-  #   -output "./build/XCFrameworkExample.xcframework"
-
   deployment_target = target.platform.deployment_target.to_s
   
   target_label = target.label # name with platform if it's used in multiple platforms
@@ -144,7 +122,7 @@ def build_for_iosish_platform(sandbox,
   puts output_path
 
   output_path.mkpath unless output_path.exist?
-  FileUtils.mv tmp_lipoed_binary_path, output_path, :force => true
+  FileUtils.mv device_framework_path, output_path, :force => true
 
 end
 
