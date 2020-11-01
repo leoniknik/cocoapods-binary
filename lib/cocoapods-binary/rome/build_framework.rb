@@ -63,6 +63,7 @@ def build_for_iosish_platform(sandbox,
   target_name = target.name # equals target.label, like "AFNeworking-iOS" when AFNetworking is used in multiple platforms.
   module_name = target.product_module_name
   device_framework_path = "#{build_dir}/#{CONFIGURATION}-#{device}/#{target_name}/#{module_name}.framework"
+  # xc_device_framework_path = "#{build_dir}/#{CONFIGURATION}-#{device}/#{target_name}/#{module_name}.xcframework"
   simulator_framework_path = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{target_name}/#{module_name}.framework"
 
   puts device_framework_path
@@ -73,13 +74,7 @@ def build_for_iosish_platform(sandbox,
   # device_binary = device_framework_path + "/#{module_name}"
   # simulator_binary = simulator_framework_path + "/#{module_name}"
 
-  puts device_binary
-  puts simulator_binary
-
-  puts File.file?(device_binary)
-  puts File.file?(simulator_binary)
-
-  return unless File.file?(device_binary) && File.file?(simulator_binary)
+  # return unless File.file?(device_binary) && File.file?(simulator_binary)
   
   # the device_lib path is the final output file path
   # combine the binaries
@@ -90,7 +85,7 @@ def build_for_iosish_platform(sandbox,
   lipo_log = `xcodebuild -create-xcframework -framework #{device_framework_path} -framework #{simulator_framework_path} -output #{tmp_lipoed_binary_path}`
 #
   puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
-  FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
+  # FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
 #
 #   # collect the swiftmodule file for various archs.
 #   device_swiftmodule_path = device_framework_path + "/Modules/#{module_name}.swiftmodule"
@@ -149,7 +144,7 @@ def build_for_iosish_platform(sandbox,
   puts output_path
 
   output_path.mkpath unless output_path.exist?
-  FileUtils.mv device_framework_path, output_path, :force => true
+  FileUtils.mv tmp_lipoed_binary_path, output_path, :force => true
 
 end
 
