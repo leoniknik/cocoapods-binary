@@ -85,73 +85,67 @@ def build_for_iosish_platform(sandbox,
 
   puts tmp_lipoed_binary_path
 
-  # xcodebuild -create-xcframework
-
-  # lipo_log = `lipo -create -output #{tmp_lipoed_binary_path} #{device_binary} #{simulator_binary}`
-
-
-
-  lipo_log = `xcodebuild -create-xcframework -framework #{device_binary} -framework #{simulator_binary} -output #{tmp_lipoed_binary_path}`
-
-  puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
-  FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
-  
-  # collect the swiftmodule file for various archs.
-  device_swiftmodule_path = device_framework_path + "/Modules/#{module_name}.swiftmodule"
-  simulator_swiftmodule_path = simulator_framework_path + "/Modules/#{module_name}.swiftmodule"
-
-  puts device_swiftmodule_path
-  puts simulator_swiftmodule_path
-
-  if File.exist?(device_swiftmodule_path)
-    FileUtils.cp_r simulator_swiftmodule_path + "/.", device_swiftmodule_path
-  end
-
-  # combine the generated swift headers
-  # (In xcode 10.2, the generated swift headers vary for each archs)
-  # https://github.com/leavez/cocoapods-binary/issues/58
-  simulator_generated_swift_header_path = simulator_framework_path + "/Headers/#{module_name}-Swift.h"
-  device_generated_swift_header_path = device_framework_path + "/Headers/#{module_name}-Swift.h"
-
-  puts simulator_generated_swift_header_path
-  puts device_generated_swift_header_path
-
-  if File.exist? simulator_generated_swift_header_path
-    device_header = File.read(device_generated_swift_header_path)
-    simulator_header = File.read(simulator_generated_swift_header_path)
-    # https://github.com/Carthage/Carthage/issues/2718#issuecomment-473870461
-    combined_header_content = %Q{
-#if TARGET_OS_SIMULATOR // merged by cocoapods-binary
-
-#{simulator_header}
-
-#else // merged by cocoapods-binary
-
-#{device_header}
-
-#endif // merged by cocoapods-binary
-}
-    File.write(device_generated_swift_header_path, combined_header_content.strip)
-  end
-
-  # handle the dSYM files
-  device_dsym = "#{device_framework_path}.dSYM"
-  if File.exist? device_dsym
-    # lipo the simulator dsym
-    simulator_dsym = "#{simulator_framework_path}.dSYM"
-    if File.exist? simulator_dsym
-      tmp_lipoed_binary_path = "#{output_path}/#{module_name}.draft"
-      lipo_log = `lipo -create -output #{tmp_lipoed_binary_path} #{device_dsym}/Contents/Resources/DWARF/#{module_name} #{simulator_dsym}/Contents/Resources/DWARF/#{module_name}`
-      puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
-      FileUtils.mv tmp_lipoed_binary_path, "#{device_framework_path}.dSYM/Contents/Resources/DWARF/#{module_name}", :force => true
-    end
-    # move
-    FileUtils.mv device_dsym, output_path, :force => true
-  end
-
-  # output
-  output_path.mkpath unless output_path.exist?
-  FileUtils.mv device_framework_path, output_path, :force => true
+#   lipo_log = `xcodebuild -create-xcframework -framework #{device_binary} -framework #{simulator_binary} -output #{tmp_lipoed_binary_path}`
+#
+#   puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
+#   FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
+#
+#   # collect the swiftmodule file for various archs.
+#   device_swiftmodule_path = device_framework_path + "/Modules/#{module_name}.swiftmodule"
+#   simulator_swiftmodule_path = simulator_framework_path + "/Modules/#{module_name}.swiftmodule"
+#
+#   puts device_swiftmodule_path
+#   puts simulator_swiftmodule_path
+#
+#   if File.exist?(device_swiftmodule_path)
+#     FileUtils.cp_r simulator_swiftmodule_path + "/.", device_swiftmodule_path
+#   end
+#
+#   # combine the generated swift headers
+#   # (In xcode 10.2, the generated swift headers vary for each archs)
+#   # https://github.com/leavez/cocoapods-binary/issues/58
+#   simulator_generated_swift_header_path = simulator_framework_path + "/Headers/#{module_name}-Swift.h"
+#   device_generated_swift_header_path = device_framework_path + "/Headers/#{module_name}-Swift.h"
+#
+#   puts simulator_generated_swift_header_path
+#   puts device_generated_swift_header_path
+#
+#   if File.exist? simulator_generated_swift_header_path
+#     device_header = File.read(device_generated_swift_header_path)
+#     simulator_header = File.read(simulator_generated_swift_header_path)
+#     # https://github.com/Carthage/Carthage/issues/2718#issuecomment-473870461
+#     combined_header_content = %Q{
+# #if TARGET_OS_SIMULATOR // merged by cocoapods-binary
+#
+# #{simulator_header}
+#
+# #else // merged by cocoapods-binary
+#
+# #{device_header}
+#
+# #endif // merged by cocoapods-binary
+# }
+#     File.write(device_generated_swift_header_path, combined_header_content.strip)
+#   end
+#
+#   # handle the dSYM files
+#   device_dsym = "#{device_framework_path}.dSYM"
+#   if File.exist? device_dsym
+#     # lipo the simulator dsym
+#     simulator_dsym = "#{simulator_framework_path}.dSYM"
+#     if File.exist? simulator_dsym
+#       tmp_lipoed_binary_path = "#{output_path}/#{module_name}.draft"
+#       lipo_log = `lipo -create -output #{tmp_lipoed_binary_path} #{device_dsym}/Contents/Resources/DWARF/#{module_name} #{simulator_dsym}/Contents/Resources/DWARF/#{module_name}`
+#       puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
+#       FileUtils.mv tmp_lipoed_binary_path, "#{device_framework_path}.dSYM/Contents/Resources/DWARF/#{module_name}", :force => true
+#     end
+#     # move
+#     FileUtils.mv device_dsym, output_path, :force => true
+#   end
+#
+#   # output
+#   output_path.mkpath unless output_path.exist?
+#   FileUtils.mv device_framework_path, output_path, :force => true
 
 end
 
