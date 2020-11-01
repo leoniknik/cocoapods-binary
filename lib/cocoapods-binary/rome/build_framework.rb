@@ -68,8 +68,10 @@ def build_for_iosish_platform(sandbox,
   puts device_framework_path
   puts simulator_framework_path
 
-  device_binary = device_framework_path + "/#{module_name}"
-  simulator_binary = simulator_framework_path + "/#{module_name}"
+  # device_binary = device_framework_path + "/#{module_name}"
+  # simulator_binary = simulator_framework_path + "/#{module_name}"
+  # device_binary = device_framework_path + "/#{module_name}"
+  # simulator_binary = simulator_framework_path + "/#{module_name}"
 
   puts device_binary
   puts simulator_binary
@@ -85,10 +87,10 @@ def build_for_iosish_platform(sandbox,
 
   puts tmp_lipoed_binary_path
 
-#   lipo_log = `xcodebuild -create-xcframework -framework #{device_binary} -framework #{simulator_binary} -output #{tmp_lipoed_binary_path}`
+  lipo_log = `xcodebuild -create-xcframework -framework #{device_framework_path} -framework #{simulator_framework_path} -output #{tmp_lipoed_binary_path}`
 #
-#   puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
-#   FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
+  puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
+  FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
 #
 #   # collect the swiftmodule file for various archs.
 #   device_swiftmodule_path = device_framework_path + "/Modules/#{module_name}.swiftmodule"
@@ -144,8 +146,10 @@ def build_for_iosish_platform(sandbox,
 #   end
 #
 #   # output
-#   output_path.mkpath unless output_path.exist?
-#   FileUtils.mv device_framework_path, output_path, :force => true
+  puts output_path
+
+  output_path.mkpath unless output_path.exist?
+  FileUtils.mv device_framework_path, output_path, :force => true
 
 end
 
