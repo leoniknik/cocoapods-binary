@@ -21,6 +21,28 @@ def build_for_iosish_platform(sandbox,
                               custom_build_options_simulator = [] # Array<String>
                               )
 
+  # # iOS devices
+  # xcodebuild archive \
+  #   -scheme XCFrameworkExample-iOS \
+  #   -archivePath "./build/ios.xcarchive" \
+  #   -sdk iphoneos \
+  #   SKIP_INSTALL=NO \
+  #   BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+  # # iOS simulator
+  # xcodebuild archive \
+  #   -scheme XCFrameworkExample-iOS \
+  #   -archivePath "./build/ios_sim.xcarchive" \
+  #   -sdk iphonesimulator \
+  #   SKIP_INSTALL=NO \
+  #   BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+  #
+  # xcodebuild -create-xcframework \
+  #   -framework "./build/ios.xcarchive/Products/Library/Frameworks/XCFrameworkExample.framework" \
+  #   -framework "./build/ios_sim.xcarchive/Products/Library/Frameworks/XCFrameworkExample.framework" \
+  #   -framework "./build/macos.xcarchive/Products/Library/Frameworks/XCFrameworkExample.framework" \
+  #   -output "./build/XCFrameworkExample.xcframework"
+
   deployment_target = target.platform.deployment_target.to_s
   
   target_label = target.label # name with platform if it's used in multiple platforms
@@ -43,13 +65,26 @@ def build_for_iosish_platform(sandbox,
   device_framework_path = "#{build_dir}/#{CONFIGURATION}-#{device}/#{target_name}/#{module_name}.framework"
   simulator_framework_path = "#{build_dir}/#{CONFIGURATION}-#{simulator}/#{target_name}/#{module_name}.framework"
 
+  puts device_framework_path
+  puts simulator_framework_path
+
   device_binary = device_framework_path + "/#{module_name}"
   simulator_binary = simulator_framework_path + "/#{module_name}"
+
+  puts device_binary
+  puts simulator_binary
+
+  puts File.file?(device_binary)
+  puts File.file?(simulator_binary)
+
   return unless File.file?(device_binary) && File.file?(simulator_binary)
   
   # the device_lib path is the final output file path
   # combine the binaries
   tmp_lipoed_binary_path = "#{build_dir}/#{target_name}"
+
+  puts tmp_lipoed_binary_path
+
   lipo_log = `lipo -create -output #{tmp_lipoed_binary_path} #{device_binary} #{simulator_binary}`
   puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
   FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
@@ -57,6 +92,10 @@ def build_for_iosish_platform(sandbox,
   # collect the swiftmodule file for various archs.
   device_swiftmodule_path = device_framework_path + "/Modules/#{module_name}.swiftmodule"
   simulator_swiftmodule_path = simulator_framework_path + "/Modules/#{module_name}.swiftmodule"
+
+  puts device_swiftmodule_path
+  puts simulator_swiftmodule_path
+
   if File.exist?(device_swiftmodule_path)
     FileUtils.cp_r simulator_swiftmodule_path + "/.", device_swiftmodule_path
   end
@@ -66,6 +105,10 @@ def build_for_iosish_platform(sandbox,
   # https://github.com/leavez/cocoapods-binary/issues/58
   simulator_generated_swift_header_path = simulator_framework_path + "/Headers/#{module_name}-Swift.h"
   device_generated_swift_header_path = device_framework_path + "/Headers/#{module_name}-Swift.h"
+
+  puts simulator_generated_swift_header_path
+  puts device_generated_swift_header_path
+
   if File.exist? simulator_generated_swift_header_path
     device_header = File.read(device_generated_swift_header_path)
     simulator_header = File.read(simulator_generated_swift_header_path)
