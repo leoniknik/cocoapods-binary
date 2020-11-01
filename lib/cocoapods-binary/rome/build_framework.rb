@@ -47,6 +47,8 @@ def build_for_iosish_platform(sandbox,
   puts device_framework_path
   puts simulator_framework_path
 
+  puts xc_device_framework_path
+
   # device_binary = device_framework_path + "/#{module_name}"
   # simulator_binary = simulator_framework_path + "/#{module_name}"
   # device_binary = device_framework_path + "/#{module_name}"
