@@ -85,7 +85,7 @@ def build_for_iosish_platform(sandbox,
   lipo_log = `xcodebuild -create-xcframework -framework #{device_framework_path} -framework #{simulator_framework_path} -output #{tmp_lipoed_binary_path}`
 #
   puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
-  # FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
+  FileUtils.mv tmp_lipoed_binary_path, device_framework_path, :force => true
 #
 #   # collect the swiftmodule file for various archs.
 #   device_swiftmodule_path = device_framework_path + "/Modules/#{module_name}.swiftmodule"
