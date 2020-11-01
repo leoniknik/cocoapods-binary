@@ -48,7 +48,7 @@ def build_for_iosish_platform(sandbox,
   target_label = target.label # name with platform if it's used in multiple platforms
   Pod::UI.puts "Prebuilding #{target_label}..."
   
-  other_options = []
+  other_options = ['BUILD_LIBRARY_FOR_DISTRIBUTION=YES']
   # bitcode enabled
   other_options += ['BITCODE_GENERATION_MODE=bitcode'] if bitcode_enabled
   # make less arch to iphone simulator for faster build
@@ -81,11 +81,18 @@ def build_for_iosish_platform(sandbox,
   
   # the device_lib path is the final output file path
   # combine the binaries
-  tmp_lipoed_binary_path = "#{build_dir}/#{target_name}"
+  tmp_lipoed_binary_path = "#{build_dir}/#{target_name}.xcframework"
 
   puts tmp_lipoed_binary_path
 
-  lipo_log = `lipo -create -output #{tmp_lipoed_binary_path} #{device_binary} #{simulator_binary}`
+  # xcodebuild -create-xcframework
+
+  # lipo_log = `lipo -create -output #{tmp_lipoed_binary_path} #{device_binary} #{simulator_binary}`
+
+
+
+  lipo_log = `xcodebuild -create-xcframework -framework #{device_binary} -framework #{simulator_binary} -output #{tmp_lipoed_binary_path}`
+
   puts lipo_log unless File.exist?(tmp_lipoed_binary_path)
   FileUtils.mv tmp_lipoed_binary_path, device_binary, :force => true
   
