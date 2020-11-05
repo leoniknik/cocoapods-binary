@@ -27,8 +27,9 @@ def build_for_iosish_platform(sandbox,
   
   target_label = target.label # name with platform if it's used in multiple platforms
   Pod::UI.puts "Prebuilding #{target_label}..."
-  
-  other_options = ["BUILD_LIBRARY_FOR_DISTRIBUTION=YES"]
+
+  other_options = []
+  # other_options = ["BUILD_LIBRARY_FOR_DISTRIBUTION=YES"]
   # bitcode enabled
   other_options += ['BITCODE_GENERATION_MODE=bitcode'] if bitcode_enabled
   # make less arch to iphone simulator for faster build
